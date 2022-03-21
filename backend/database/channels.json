@@ -1,0 +1,22 @@
+{
+    "channels": {
+        "channel-1": {
+            "channelName":"WelcomeToReact",
+            "messageStream": [
+                {
+                    "sender": "santcode",
+                    "message": "hey there how are u"
+                },
+                {
+                    "sender": "mohit",
+                    "message": "i am here at port 3000"
+                }
+            ],
+            "members": [
+                "santcode",
+                "mohit",
+                "tushar"
+            ]
+        }
+    }
+}

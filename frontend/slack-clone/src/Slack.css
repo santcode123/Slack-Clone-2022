@@ -1,0 +1,10 @@
+.slack-app {
+  width: 100vw;
+  height: 100vh;
+  background-color: rgb(26, 22, 22);
+}
+
+.error {
+  color: red;
+  font-style: italic;
+}
