@@ -1,5 +1,4 @@
 import React from 'react';
-import './Slack.css';
 
 // component
 import { LoginPage } from './components/loginPage';
@@ -7,6 +6,9 @@ import { SlackApp } from './components';
 
 //hooks
 import { useUserContext } from 'hooks/useUserContext';
+
+//Css
+import './Slack.css';
 
 const Slack = (): React.ReactElement => {
   const [loggedUser] = useUserContext();

@@ -1,14 +1,21 @@
 import React from 'react';
-import axios from 'axios';
+
 //types
 import { ActionType, ReducerStateType } from 'types';
 
-export const reducer: React.Reducer<ReducerStateType, ActionType> = (state, action) => {
-  const id = action.payload.id; // it can be undefined
+//constants
+import { REMOVE, SELECT } from 'Constants';
 
+export const reducer: React.Reducer<ReducerStateType, ActionType> = (state, action) => {
   switch (action.type) {
-    case 'channel': {
+    case SELECT: {
       return { ...state, ...action.payload };
+    }
+    case REMOVE: {
+      return {
+        ...state,
+        ...action.payload,
+      };
     }
     default: {
       return state;

@@ -1,8 +1,14 @@
 .sidebar-container {
+  flex: 0.15;
+  /* height: 820px; */
+  height: 100%;
   background-color: rgb(93, 33, 94);
   color: white;
+  overflow: scroll;
 }
 .sidebar-header {
+  /* position: sticky;
+  top: 0; */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -25,29 +31,67 @@
   color: black;
   background-color: white;
 }
-.channels-header {
+.sideOption-header-container {
   /* background-color: gray; */
   margin: 10px;
   font-size: large;
   display: flex;
   align-items: center;
 }
-.channels-header > svg {
+.sideOption-header-container > svg {
   margin-right: 10px;
 }
 
 .channels {
-  background-color: gray;
+  /* background-color: gray; */
   margin: 10px;
 }
-.channels-footer {
+.sideOption-footer-container {
   margin: 10px;
-  background-color: rgb(75, 50, 4);
+  background-color: rgb(93, 33, 94);
   color: white;
   border: none;
   cursor: pointer;
   font-size: large;
+  width: calc(100% - 32px);
+  padding: 5px;
+  text-align: left;
 }
-.add-channel {
+.sideOption-footer-container:hover {
+  background-color: rgb(74, 16, 75);
+}
+.add-option {
   margin-left: 10px;
+}
+.side-option {
+  display: flex;
+  margin: 5px;
+  padding: 5px;
+  padding-right: 20px;
+  cursor: pointer;
+  position: relative;
+}
+.side-option > span {
+  padding-right: 10px;
+}
+.side-option:hover {
+  background-color: rgb(77, 23, 78);
+}
+.side-option:hover .close-side-option {
+  visibility: visible;
+}
+.close-side-option {
+  visibility: hidden;
+  position: absolute;
+  right: 2px;
+  /* cursor: pointer; */
+}
+
+.side-option-displayName {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.direct-messages {
+  margin: 10px;
 }

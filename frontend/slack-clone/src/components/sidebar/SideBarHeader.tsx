@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { IoMdCreate } from 'react-icons/io';
+// import { IoMdCreate } from 'react-icons/io';
 import { HiChevronDown } from 'react-icons/hi';
 
 export const SideBarHeader = (): React.ReactElement => {
@@ -10,7 +10,7 @@ export const SideBarHeader = (): React.ReactElement => {
         <span>Sprinklr</span>
         <HiChevronDown />
       </div>
-      <IoMdCreate className="edit-icon" />
+      {/* <IoMdCreate className="edit-icon" /> */}
     </div>
   );
 };

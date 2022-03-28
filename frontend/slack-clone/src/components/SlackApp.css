@@ -1,8 +1,30 @@
 .slack {
   width: 100%;
   height: 100%;
-  display: grid;
-  grid-template-columns: 15% 1fr;
-  grid-template-rows: 50px 1fr;
+  display: flex;
+  flex-direction: column;
   background-color: white;
+}
+.slack-body {
+  display: flex;
+  height: 95%;
+}
+.loading-ui {
+  font-size: 40px;
+  width: 100%;
+  height: 100%;
+  color: bisque;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.error-ui {
+  font-size: 40px;
+  width: 100%;
+  height: 100%;
+  color: bisque;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: red;
 }

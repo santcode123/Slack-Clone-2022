@@ -2,22 +2,35 @@ import React from 'react';
 
 //components
 import { SideBarHeader } from './SideBarHeader';
-import { Channels } from './Channels';
+import { Channels } from './channels/Channels';
+import { DirectMessage } from './directMessage/DirectMessage';
 
 //CSS
 import './SideBar.css';
-import { useUserContext } from 'hooks/useUserContext';
-import { ActionType } from 'types';
 
-export const SideBar = ({ onAction }: { onAction: React.Dispatch<ActionType> }): React.ReactElement => {
-  const [currentUserId] = useUserContext();
+//types
+import { ActionType, AllDatabaseType } from 'types';
+
+export const SideBar = ({
+  id,
+  onAction,
+  data,
+}: {
+  id: string;
+  onAction: React.Dispatch<ActionType>;
+  data: AllDatabaseType | null;
+}): React.ReactElement => {
+  const { allChannels, allUsers, channelsId, directUsersId } = data ?? {};
+
+  const channels = channelsId?.map(id => ({ id, ...allChannels?.[id] }));
 
   return (
     <div className="sidebar-container">
       <SideBarHeader />
-      <Channels userId={currentUserId ?? ''} onAction={onAction} />
-
-      {/* <div className="direct-message"></div> */}
+      <div>
+        <Channels onAction={onAction} channels={channels} />
+        <DirectMessage onAction={onAction} directUsersId={directUsersId ?? []} allUsers={allUsers ?? {}} id={id} />
+      </div>
     </div>
   );
 };

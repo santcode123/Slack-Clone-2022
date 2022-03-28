@@ -1,38 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 
 // components
-import { SignUp } from './SignUp';
-import { Login } from './Login';
+import { SignUp } from './signUp/SignUp';
+import { Login } from './login/Login';
+import { LoginOption } from './LoginOption';
 
 //constants
-import { SIGN_UP, LOGIN } from '../../constants';
+import { SIGN_UP, LOGIN } from '../../Constants';
+
+//types
+import { LoginOptionType } from 'types';
 
 //CSS
 import './LoginPage.css';
 
 export const LoginPage = (): React.ReactElement => {
-  const [status, setStatus] = useState(SIGN_UP);
+  const [status, setStatus] = useState<LoginOptionType>(SIGN_UP);
 
-  function handleClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent> | any) {
-    if (e.target.id === SIGN_UP) {
-      setStatus(SIGN_UP);
-    } else {
-      setStatus(LOGIN);
-    }
-  }
+  const handleClick = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement, MouseEvent> & React.ChangeEvent<HTMLButtonElement>) => {
+      if (e.target.id === SIGN_UP) {
+        setStatus(SIGN_UP);
+      } else {
+        setStatus(LOGIN);
+      }
+    },
+    []
+  );
 
   return (
     <div className="login-page">
-      <div className="header">please login or signUp</div>
+      <div className="header">Please login or signUp</div>
       <div className="body">{status === SIGN_UP ? <SignUp /> : <Login />}</div>
       <div className="footer">
         <div className="login-options">
-          <button onClick={handleClick} className="login-button" id="login">
-            Login
-          </button>
-          <button onClick={handleClick} className="signUp-button" id="signUp">
-            SignUp
-          </button>
+          <LoginOption id="login" label="Login" className="login-button" onClick={handleClick} />
+          <LoginOption id="signUp" label="SignUp" className="signUp-button" onClick={handleClick} />
         </div>
       </div>
     </div>

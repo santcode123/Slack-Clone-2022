@@ -1,4 +1,5 @@
 .message-container {
+  flex: 0.85;
   display: flex;
   flex-direction: column;
 }
@@ -8,22 +9,32 @@
   border-bottom: 1px solid rgb(212, 197, 197, 0.6);
   display: flex;
   align-items: center;
+  justify-content: space-between;
+}
+.messageContainer-header-left {
+  display: flex;
+  /* flex-direction: column; */
+  justify-content: flex-start;
+  align-items: center;
+  margin: 5px;
+  font-weight: 700;
+  font-size: large;
+  padding: 5px;
 }
 .header-image {
   margin-left: 10px;
   margin-right: 15px;
 }
-.message-container-header > div {
-  font-weight: 700;
-  font-size: large;
-  padding: 5px;
-}
+
 .message-box {
   display: flex;
-  margin: 20px;
+  margin: 10px 20px;
 }
 .message-body {
   margin-left: 10px;
+}
+.local-time {
+  font-size: small;
 }
 .sender-profile > span:first-child {
   font-weight: 700;
@@ -32,16 +43,18 @@
 }
 
 .footer-container {
-  /* border: 1px solid black; */
+  display: flex;
+  align-items: center;
   margin: 10px;
   padding: 10px;
 }
-.footer-container > button {
-  padding: 5px;
-  width: 60px;
-  margin-left: 5px;
-  border-radius: 5px;
+.footer-container > svg {
+  font-size: 30px;
+  padding-left: 10px;
   cursor: pointer;
+}
+.footer-container > svg.active {
+  color: green;
 }
 .footer-container > input {
   width: 80%;
@@ -53,8 +66,29 @@
   height: 820px;
   border-bottom: 1px solid rgb(224, 203, 203, 0.7);
   overflow: scroll;
+  display: flex;
+  flex-direction: column-reverse;
 }
 .message {
   text-align: start;
   word-break: break-word;
+}
+.messageContainer-header-right {
+  padding: 5px;
+  margin: 10px;
+}
+.default-message {
+  flex: 0.85;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: larger;
+  font-weight: 700;
+}
+
+.members-number {
+  background-color: transparent;
+  border: 1px solid rgb(51, 47, 47);
+  border-radius: 5px;
+  cursor: pointer;
 }

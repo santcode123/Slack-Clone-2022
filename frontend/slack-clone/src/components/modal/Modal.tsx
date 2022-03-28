@@ -1,10 +1,22 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState, useRef } from 'react';
 import axios from 'axios';
 import { v4 as uuid } from 'uuid';
 
+//components
+import { AddRemove } from './AddRemove';
+
+//hooks
+import { useUserContext } from 'hooks/useUserContext';
+
+//types
+import { ActionType, SelectedOptionType } from 'types';
+
+//constants
+import { CHANNEL } from 'Constants';
+
 //CSS
 import './Modal.css';
-import { useUserContext } from 'hooks/useUserContext';
+import console from 'console';
 
 export const Modal = ({
   isOpen,
@@ -12,45 +24,88 @@ export const Modal = ({
   inputName,
   footerTitle,
   handleClose,
+  users,
+  selectedId,
+  modalType,
+  onAction,
 }: {
   isOpen: boolean;
   headerTitle: string;
-  inputName: string;
-  footerTitle: string;
-  handleClose: (isOpen: boolean) => void;
+  inputName?: string;
+  footerTitle?: string;
+  handleClose: () => void;
+  users?: Array<{ id: string; displayName: string; included: boolean }>;
+  selectedId?: string;
+  modalType: SelectedOptionType;
+  onAction: React.Dispatch<ActionType>;
 }): React.ReactElement => {
   const [inputValue, setInputValue] = useState('');
-  const [userId] = useUserContext();
+  const [loggedUser] = useUserContext();
+  const { userId: loggedUserId = '' } = loggedUser ?? {};
+  const modalContainerRef = useRef(null);
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
-  }
+  }, []);
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    async function createChannel() {
-      const channelId = uuid();
-      axios.post(`/create/channel/${channelId}`, { channelName: inputValue, userId: userId });
-    }
-    createChannel();
-  }
+  const handleSubmit = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      async function createChannel() {
+        const channelId = uuid();
 
-  function handleClick() {
-    handleClose(!isOpen);
-  }
+        axios
+          .post(`/create/channel/${channelId}`, { userId: loggedUserId, channelName: inputValue })
+          .then(res => {
+            onAction({
+              type: 'select',
+              payload: {
+                id: channelId,
+                selectedOptionType: CHANNEL,
+              },
+            });
+          })
+          .catch(err => {
+            throw new Error(err);
+          });
+      }
+      setInputValue('');
+      handleClose();
+      createChannel();
+    },
+    [inputValue, loggedUserId, handleClose, onAction]
+  );
+
+  const handleOutSideClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      if (modalContainerRef.current === e.target) handleClose();
+    },
+    [handleClose]
+  );
   return (
     <>
       {isOpen ? (
-        <div className="modal-container">
+        <div className="modal-container" ref={modalContainerRef} onClick={handleOutSideClick}>
           <div className="modal">
-            <span onClick={handleClick}>X</span>
+            <div className="modal-header">{headerTitle}</div>
+            <span onClick={handleClose}>X</span>
             <form onSubmit={handleSubmit}>
-              <div className="modal-header">{headerTitle}</div>
-              <label htmlFor="modal-input" className="name-label">
-                {inputName}
-              </label>
-              <input id="modal-input" className="name-input" onChange={handleChange} value={inputValue}></input>
-              <button className="modal-footer">{footerTitle}</button>
+              {inputName ? (
+                <>
+                  <label htmlFor="modal-input" className="name-label">
+                    {inputName}
+                  </label>
+                  <input id="modal-input" className="name-input" onChange={handleChange} value={inputValue}></input>
+                </>
+              ) : null}
+              {footerTitle ? <button className="modal-footer">{footerTitle}</button> : null}
+              <AddRemove
+                type={modalType}
+                users={users}
+                selectedId={selectedId}
+                onAction={onAction}
+                handleClose={handleClose}
+              />
             </form>
           </div>
         </div>

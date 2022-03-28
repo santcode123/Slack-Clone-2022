@@ -1,10 +1,10 @@
 .header-container {
+  height: 5%;
   display: flex;
   justify-content: center;
   align-items: center;
   grid-column-start: 1;
   grid-column-end: 3;
-
   background-color: rgb(53, 13, 54);
   color: white;
 }
@@ -46,4 +46,7 @@
 .profile-image {
   border-radius: 100%;
   margin: 10px;
+}
+.user-name {
+  margin-right: 10px;
 }

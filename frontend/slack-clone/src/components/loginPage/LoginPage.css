@@ -1,5 +1,6 @@
 .login-page {
-  color: rgb(190, 174, 174);
+  background-color: #2f0c33;
+  color: white;
   width: 100%;
   height: 100%;
   display: flex;
@@ -8,55 +9,78 @@
   align-items: center;
   text-align: center;
 }
-.login-options {
-  margin: 10px;
-}
 .header {
   font-size: 30px;
 }
-
+.login-options {
+  margin: 10px;
+}
 .login-button {
-  border: 1px solid white;
-  background-color: antiquewhite;
+  border: none;
   margin-right: 10px;
   border-radius: 5px;
   font-size: large;
   cursor: pointer;
 }
+.login-button:hover {
+  background-color: green;
+}
 .signUp-button {
-  border: 1px solid white;
-  background-color: antiquewhite;
+  border: none;
   margin-left: 10px;
   border-radius: 5px;
   font-size: large;
   cursor: pointer;
 }
+.signUp-button:hover {
+  background-color: green;
+}
 .submit-button {
   border: 1px solid rgb(54, 52, 52);
-  background-color: antiquewhite;
+  background-color: transparent;
   font-size: large;
   border-radius: 5px;
   cursor: pointer;
-
   margin: 10px;
 }
+.submit-button:hover {
+  background-color: green;
+}
+
 .body {
   color: black;
-  font-size: large;
+  font-size: larger;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 400px;
-  height: 350px;
-  background-color: antiquewhite;
+  width: 500px;
+  height: max-content;
+  background-color: white;
   margin: 10px;
   border-radius: 10px;
 }
-.body > form > div {
-  margin-top: 20px;
+.body > form {
+  width: 100%;
+  height: 100%;
+  margin: 10px;
 }
-.body > form > div > input {
-  margin-left: 10px;
-  padding: 2px;
+
+.user-input {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  margin: 20px;
+}
+
+.user-input > label {
+  margin-bottom: 5px;
+}
+
+.user-input > input {
+  padding: 10px;
+  /* padding-left: 20px; */
+  margin-right: 20px;
+  border-radius: 5px;
+  border: 1px solid rgb(184, 223, 184);
 }

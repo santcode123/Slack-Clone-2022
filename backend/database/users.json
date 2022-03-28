@@ -1,14 +1,5 @@
 {
     "users": {
-        "user-1": {
-            "firstName": "santosh",
-            "lastName": "Meena",
-            "userName": "santcode",
-            "password": "1234",
-            "channels": [
-                "channel-1"
-            ],
-            "directMessages": []
-        }
+       
     }
 }

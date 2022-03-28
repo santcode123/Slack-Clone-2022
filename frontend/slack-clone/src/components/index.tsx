@@ -4,34 +4,61 @@ import React, { useReducer } from 'react';
 import { Header } from './header';
 import { SideBar } from './sidebar';
 import { MessageContainer } from './messageContainer';
+import { LoadingFallback } from './LoadingFallback';
+import { ErrorFallback } from './ErrorFallback';
 
 //utils
 import { reducer } from '../reducer';
+import { getLoggedUserInfo } from 'utils';
+
+//hooks
+import { useUserContext } from 'hooks/useUserContext';
+import { useFetchAllDatabase } from 'hooks/useFetchAllDatabase';
+
+//types
+import { SelectedOptionType } from 'types';
+
+//constants
+import { LOADING, ERROR } from 'Constants';
 
 // CSS
 import './SlackApp.css';
 
-const INITIAL_STATE = {
-  id: 'lsjjd',
-  displayName: 'hey man',
-  messageStream: [
-    { sender: 'lol', message: 'po start' },
-    {
-      sender: 'vinod',
-      message:
-        'i am comin sajdh jsabjdasdjhasbdhasbdhgasvdhgasvdhgvdhsagdajshbjhdbsajdbahjdbahsjdbasjdhasbdjasbdhjasbdjasdjashjdbasjhjdbhbhjadhbasvdhasgdvhgasdvhasvdhsgvdhgsadvhsagdvhsadvhasgvdhgasvdhsgadvsahvghdbasd djasdbhgsavd hsahdgvashgdvas dhagsvdhgasvg',
-    },
-  ],
-  members: [],
+const INITIAL_STATE: { id: string; selectedOptionType: SelectedOptionType } = {
+  id: '',
+  selectedOptionType: 'channel',
 };
 export const SlackApp = (): React.ReactElement => {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
+  const [loggedUser] = useUserContext();
+  const { userId: loggedUserId = '' } = loggedUser ?? {};
+  const { status, data } = useFetchAllDatabase(loggedUserId);
 
+  const { id, selectedOptionType } = state;
+
+  const { displayName, messageStream, members } = getLoggedUserInfo(loggedUserId, id, selectedOptionType, data);
+
+  if (status === LOADING) {
+    return <LoadingFallback fallbackMessage="please wait..." />;
+  }
+  if (status === ERROR) {
+    return <ErrorFallback />;
+  }
   return (
     <div className="slack">
       <Header />
-      <SideBar onAction={dispatch} />
-      <MessageContainer displayName={state.displayName} messageStream={state.messageStream} members={state.members} />
+      <div className="slack-body">
+        <SideBar onAction={dispatch} data={data} id={id} />
+        <MessageContainer
+          id={id}
+          displayName={displayName ?? ''}
+          messageStream={messageStream ?? []}
+          members={members}
+          type={selectedOptionType}
+          allUsers={data?.allUsers ?? {}}
+          onAction={dispatch}
+        />
+      </div>
     </div>
   );
 };
