@@ -16,7 +16,8 @@ import { CHANNEL } from 'Constants';
 
 //CSS
 import './Modal.css';
-import console from 'console';
+
+const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 export const Modal = ({
   isOpen,
@@ -55,7 +56,7 @@ export const Modal = ({
         const channelId = uuid();
 
         axios
-          .post(`/create/channel/${channelId}`, { userId: loggedUserId, channelName: inputValue })
+          .post(`${BASE_URL}/create/channel/${channelId}`, { userId: loggedUserId, channelName: inputValue })
           .then(res => {
             onAction({
               type: 'select',

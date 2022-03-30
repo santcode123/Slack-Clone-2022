@@ -7,6 +7,8 @@ import { AllDatabaseType } from 'types';
 //constants
 import { PENDING } from 'Constants';
 
+const BASE_URL = process.env.REACT_APP_BASE_URL;
+
 function useFetchAllDatabase(userId: string) {
   const [data, setData] = useState<AllDatabaseType | null>(null);
   const [status, setStatus] = useState(PENDING);
@@ -14,7 +16,7 @@ function useFetchAllDatabase(userId: string) {
   useEffect(() => {
     async function getAllDatabase() {
       try {
-        const response = await axios.get(`allDatabase/${userId}`);
+        const response = await axios.get(`${BASE_URL}/allDatabase/${userId}`);
         const data = await response.data;
         setData(data);
         setStatus('success');

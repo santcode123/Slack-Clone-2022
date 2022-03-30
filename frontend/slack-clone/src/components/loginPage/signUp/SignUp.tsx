@@ -11,6 +11,7 @@ import { useUserContext } from 'hooks/useUserContext';
 import { UserType } from 'types';
 
 const DEFAULT_FORM_DATA = { firstName: '', lastName: '', userName: '', password: '' };
+const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 export const SignUp = (): React.ReactElement => {
   const [formData, setFormData] = useState<Omit<UserType, 'directUsers' | 'channels'>>(DEFAULT_FORM_DATA);
@@ -29,7 +30,7 @@ export const SignUp = (): React.ReactElement => {
 
       if (userName && password && firstName) {
         axios
-          .post('/addUser', formData)
+          .post(`${BASE_URL}/addUser`, formData)
           .then(res => {
             if (res.data.status === 'success') {
               const { userId, displayName } = res.data;
@@ -40,7 +41,7 @@ export const SignUp = (): React.ReactElement => {
             }
           })
           .catch(err => {
-            setError(`there is an error while adding user to backend in signUp process`);
+            setError(`there is an error while adding user to backend in signUp process:${err}`);
           });
       } else {
         setError('firstName, userName and password are required');

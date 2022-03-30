@@ -30,19 +30,24 @@ const INITIAL_STATE: { id: string; selectedOptionType: SelectedOptionType } = {
 };
 export const SlackApp = (): React.ReactElement => {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
-  const [loggedUser] = useUserContext();
+  const [loggedUser, setLoggedUser] = useUserContext();
   const { userId: loggedUserId = '' } = loggedUser ?? {};
   const { status, data } = useFetchAllDatabase(loggedUserId);
+
+  const isAppRestarted = Object.keys(data?.allUsers ?? {}).length === 0 && !!data;
 
   const { id, selectedOptionType } = state;
 
   const { displayName, messageStream, members } = getLoggedUserInfo(loggedUserId, id, selectedOptionType, data);
 
+  if (isAppRestarted) {
+    setLoggedUser(null);
+  }
   if (status === LOADING) {
     return <LoadingFallback fallbackMessage="please wait..." />;
   }
   if (status === ERROR) {
-    return <ErrorFallback />;
+    return <ErrorFallback errorMessage="error occurred in backend please check" />;
   }
   return (
     <div className="slack">

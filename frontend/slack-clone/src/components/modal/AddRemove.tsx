@@ -9,7 +9,11 @@ import { ActionType, SelectedOptionType } from 'types';
 
 //hooks
 import { useUserContext } from 'hooks/useUserContext';
+
+//constants
 import { CHANNEL, REMOVE, USER } from 'Constants';
+
+const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 export const AddRemove = ({
   users,
@@ -28,6 +32,7 @@ export const AddRemove = ({
   const { userId: loggedUserId } = loggedUser ?? {};
   const includedUsers = users?.filter(user => user.included);
   const excludedUsers = users?.filter(user => !user.included);
+
   const handleAction = useCallback(
     (e: React.MouseEvent<HTMLButtonElement, MouseEvent> & React.ChangeEvent<HTMLButtonElement>) => {
       e.preventDefault();
@@ -37,23 +42,25 @@ export const AddRemove = ({
       const clickedUser = users?.filter(ele => ele.id === clickedUserId)?.[0];
 
       if (clickedUser?.included && type === CHANNEL) {
-        axios.post(`remove/user/fromChannel`, { channelId: selectedId, userId: clickedUserId }).then(res => {
-          if (clickedUserId === loggedUserId) {
-            onAction({
-              type: REMOVE,
-              payload: {
-                id: '',
-              },
-            });
-          }
-        });
+        axios
+          .post(`${BASE_URL}/remove/user/fromChannel`, { channelId: selectedId, userId: clickedUserId })
+          .then(res => {
+            if (clickedUserId === loggedUserId) {
+              onAction({
+                type: REMOVE,
+                payload: {
+                  id: '',
+                },
+              });
+            }
+          });
       } else if (type === CHANNEL) {
-        axios.post(`add/user/toChannel`, { channelId: selectedId, userId: clickedUserId });
+        axios.post(`${BASE_URL}/add/user/toChannel`, { channelId: selectedId, userId: clickedUserId });
       }
 
       if (type === USER) {
         if (clickedUser?.included) {
-          axios.post(`remove/directUser/${loggedUserId}`, { directUserId: clickedUserId });
+          axios.post(`${BASE_URL}/remove/directUser/${loggedUserId}`, { directUserId: clickedUserId });
 
           if (clickedUserId === selectedId) {
             onAction({
@@ -64,7 +71,7 @@ export const AddRemove = ({
             });
           }
         } else {
-          axios.post(`add/directUser/${loggedUserId}`, { directUserId: clickedUserId });
+          axios.post(`${BASE_URL}/add/directUser/${loggedUserId}`, { directUserId: clickedUserId });
           onAction({
             type: 'select',
             payload: {

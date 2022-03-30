@@ -95,3 +95,16 @@
 .direct-messages {
   margin: 10px;
 }
+
+.restart-app {
+  background-color: rgb(224, 95, 95);
+  border: none;
+  font-size: large;
+  width: 100%;
+  text-align: center;
+  cursor: pointer;
+}
+
+.restart-app:hover {
+  background-color: red;
+}

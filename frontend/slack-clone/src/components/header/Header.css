@@ -41,12 +41,17 @@
   width: 35%;
   display: flex;
   justify-content: end;
-  margin: 10px;
+  margin: 4px 10px;
 }
 .profile-image {
   border-radius: 100%;
-  margin: 10px;
+  margin: 2px 10px;
+  cursor: pointer;
 }
 .user-name {
   margin-right: 10px;
+}
+.signOut-modal-container {
+  position: fixed;
+  top: 5%;
 }

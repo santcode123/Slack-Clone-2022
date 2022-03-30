@@ -2,7 +2,7 @@ const express=require('express')
 const cors=require('cors')
 const app=express()
 const bp = require('body-parser')
-// const generateUniqueId = require('generate-unique-id');
+require('dotenv').config();
 
 const fs= require('fs')
 const usersDb=require('./database/users.json')
@@ -12,9 +12,6 @@ const directMessagesDb=require('./database/directMessage.json')
 app.use(cors())
 app.use(bp.json())
 app.use(bp.urlencoded({ extended: true }))
-
-
-
 
 
 app.post('/getUser/withLoginInfo',(req,res)=>{
@@ -42,8 +39,8 @@ app.post('/addUser',(req,res)=>{
   }
   else{
    const fullName=firstName+' '+lastName;
-  usersDb.users[userId]=newUser;
-  res.json({status:'success',userId,displayName:fullName})
+   usersDb.users[userId]=newUser;
+   res.json({status:'success',userId,displayName:fullName})
   }
  })
 
@@ -54,8 +51,13 @@ app.get('/allDatabase/:userId',(req,res)=>{
     const allChannels=channelsDb.channels;
     const allUsers=usersDb.users;
     const allDirectMessages=directMessagesDb.directMessages;
-    const channelsId=usersDb.users[userId].channels;
-    const directUsersId=usersDb.users[userId].directUsers;
+    let channelsId= [];
+    let directUsersId=[];
+    if(usersDb.users[userId])
+    {
+      channelsId=usersDb.users[userId].channels;
+      directUsersId=usersDb.users[userId].directUsers;
+    }
     return {
       allChannels,
       allUsers,
@@ -83,7 +85,7 @@ app.post('/add/user/toChannel',(req,res)=>{
   const {channelId,userId}=req.body;
   usersDb.users[userId].channels.push(channelId);
   channelsDb.channels[channelId].members.push(userId);
-  res.send('successfully added')
+  res.send('user successfully added')
 })
 
 app.post('/remove/user/fromChannel',(req,res)=>{
@@ -92,7 +94,7 @@ app.post('/remove/user/fromChannel',(req,res)=>{
   const filteredMembers=channelsDb.channels[channelId].members.filter(id=>id!==userId);
   usersDb.users[userId].channels=filteredChannels;
   channelsDb.channels[channelId].members=filteredMembers;
-  res.send(' successfully removed')
+  res.send(' user successfully removed')
 })
 
 app.post('/remove/directUser/:loggedUserId',(req,res)=>{
@@ -121,43 +123,8 @@ app.post('/create/channel/:channelId',(req,res)=>{
   }
   usersDb.users[userId].channels.push(channelId);
   channelsDb.channels[channelId]=newChannel;
-  res.json({usersDb,channelsDb})
+  res.send('channel created successfully')
 })
-
-
-// TILL NOW......
-
-app.get('/user/channels/:userId',(req,res)=>{
-  const userId=req.params.userId;
-   
- function getAllChannels(userId)
- {
-   const channelsId=usersDb.users[userId].channels;
-  return channelsId.map(id=>({id,...channelsDb.channels[id]}))
- }
-   let timeoutId=setTimeout(()=>{
-    const data= {"channels":getAllChannels(userId)};
-    clearTimeout(timeoutId);
-    res.json(data);  
-  },4000);
-})
-
-
-
-
-
-app.get('/channel/:channelId',(req,res)=>{
-const channelId=req.params.channelId;
-res.json(channelsDb.channels[channelId]);
-})
-
-
-
-
-
-
-
-
 
 app.post('/send/message/directUser/:loggedUserId',(req,res)=>{
   const loggedUserId=req.params.loggedUserId;
@@ -190,22 +157,16 @@ app.post('/add/directUser/:loggedUserId',(req,res)=>{
   res.send('direct User added');
 })
 
-// app.post('/remove/directUser/:loggedUserId',(req,res)=>{
-//   const loggedUserId=req.params.loggedUserId;
-//   const {directUserId}=req.body;
+//clean up all database
+app.post('/app/cleanup',(req,res)=>{
+  usersDb.users={};
+  channelsDb.channels={};
+  directMessagesDb.directMessages={};
+  res.json('successfully cleanup the')
+})
 
-//   usersDb.users[loggedUserId].directUsers=usersDb.users[loggedUserId].directUsers.filter(userId=>userId!==directUserId);
-//   if(directUserId!==loggedUserId)
-//   {
-//     usersDb.users[directUserId].directUsers=usersDb.users[directUserId].directUsers.filter(userId=>userId!==loggedUserId)
-//   }
-//   res.send('direct user removed');
-// })
+  const PORT= process.env.PORT||4000
 
-
-
-  const PORT= 4000
   app.listen(PORT,()=>{
-    
       console.log(`Server listening at port ${PORT}`)
   })

@@ -9,6 +9,8 @@ import { useUserContext } from 'hooks/useUserContext';
 
 const DEFAULT_FORM_DATA = { userName: '', password: '' };
 
+const BASE_URL = process.env.REACT_APP_BASE_URL;
+
 export const Login = (): React.ReactElement => {
   const [formData, setFormData] = useState(DEFAULT_FORM_DATA);
   const [error, setError] = useState<string | null>(null);
@@ -25,7 +27,7 @@ export const Login = (): React.ReactElement => {
       const { userName, password } = formData;
 
       if (userName && password) {
-        axios.post(`getUser/withLoginInfo`, { userName, password }).then(res => {
+        axios.post(`${BASE_URL}/getUser/withLoginInfo`, { userName, password }).then(res => {
           const resData = res.data;
           if (resData.status === 'success') {
             const { displayName, userId } = resData;
