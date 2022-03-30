@@ -10,6 +10,8 @@ import { useUserContext } from 'hooks/useUserContext';
 //constants
 import { DEFAULT_IMG_URL, CHANNEL, USER, REMOVE, SELECT } from 'Constants';
 
+const BASE_URL = process.env.REACT_APP_BASE_URL;
+
 export const SideBarOption = ({
   id,
   type,
@@ -25,6 +27,7 @@ export const SideBarOption = ({
 }): React.ReactElement => {
   const [loggedUser] = useUserContext();
   const { userId: loggedUserId = '' } = loggedUser ?? {};
+
   const handleClick = useCallback(() => {
     onAction({
       type: SELECT,
@@ -39,10 +42,10 @@ export const SideBarOption = ({
     (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
       e.stopPropagation();
       if (type === CHANNEL) {
-        axios.post(`remove/channel/${loggedUserId}`, { channelId: id });
+        axios.post(`${BASE_URL}/remove/channel/${loggedUserId}`, { channelId: id });
       }
       if (type === USER) {
-        axios.post(`remove/directUser/${loggedUserId}`, { directUserId: id });
+        axios.post(`${BASE_URL}/remove/directUser/${loggedUserId}`, { directUserId: id });
       }
       onAction({
         type: REMOVE,

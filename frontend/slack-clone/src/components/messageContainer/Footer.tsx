@@ -10,6 +10,8 @@ import { SelectedOptionType } from 'types';
 //Constants
 import { CHANNEL, USER } from 'Constants';
 
+const BASE_URL = process.env.REACT_APP_BASE_URL;
+
 export const Footer = React.forwardRef(
   ({ id, type }: { id: string; type: SelectedOptionType }, ref: any): React.ReactElement => {
     const [inputValue, setInputValue] = useState('');
@@ -23,10 +25,11 @@ export const Footer = React.forwardRef(
     const handleSend = useCallback(
       (e: React.FormEvent<HTMLFormElement> & React.MouseEvent<SVGElement, MouseEvent>) => {
         e.preventDefault();
-        if (type === CHANNEL) axios.post(`send/message/channel/${id}`, { message: inputValue, userId: loggedUserId });
+        if (type === CHANNEL)
+          axios.post(`${BASE_URL}/send/message/channel/${id}`, { message: inputValue, userId: loggedUserId });
 
         if (type === USER) {
-          axios.post(`send/message/directUser/${loggedUserId}`, { message: inputValue, directUserId: id });
+          axios.post(`${BASE_URL}/send/message/directUser/${loggedUserId}`, { message: inputValue, directUserId: id });
         }
         setInputValue('');
         const timeoutId = setTimeout(() => {
