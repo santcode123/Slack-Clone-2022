@@ -4,17 +4,17 @@ export type MessageStreamType = {
   time: Date;
 };
 
-export type SelectedOptionType = 'channel' | 'user';
+export type SelectedType = 'channel' | 'user' | 'directMessage';
 export type Action = 'select' | 'remove';
 export type ReducerStateType = {
-  id: string;
-  selectedOptionType: SelectedOptionType;
+  selectedId: string;
+  selectedType?: SelectedType;
 };
 export type ActionType = {
   type: Action;
   payload: {
-    id: string;
-    selectedOptionType?: SelectedOptionType;
+    selectedId: string;
+    selectedType?: SelectedType;
   };
 };
 
@@ -33,20 +33,29 @@ export type UserType = {
   userName: string;
   password: string;
   channels: Array<string>;
-  directUsers: Array<string>;
+  directMessages: Array<string>; // it will contain the id of direct messages
 };
 export type DirectMessages = {
   [id: string]: {
-    messages: Array<MessageStreamType>;
+    directMessageId: string;
+    messageStream: Array<MessageStreamType>;
+    members: Array<string>;
   };
 };
 
-export type AllDatabaseType = {
-  allChannels: Record<string, ChannelType>;
-  allUsers: Record<string, UserType>;
-  allDirectMessages: DirectMessages;
-  channelsId: Array<string>;
-  directUsersId: Array<string>;
+export type ChannelsInfoType = { channelId: string; channelName: string };
+export type DirectMessageInfoType = { dmId: string; displayName: string };
+export type SelectedInfoType = {
+  selectedId: string;
+  displayName: string;
+  messageStream: Array<MessageStreamType>;
+  members: Array<string>;
+};
+
+export type UserDataType = {
+  channelsInfo?: Array<ChannelsInfoType>;
+  directMessagesInfo?: Array<DirectMessageInfoType>;
+  selectedInfo?: SelectedInfoType;
 };
 
 export type LoggedUserType = { userId: string; displayName: string };

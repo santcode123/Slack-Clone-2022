@@ -4,19 +4,19 @@ import { v4 as uuid } from 'uuid';
 
 //components
 import { AddRemove } from './AddRemove';
+import { BaseModal } from './BaseModal';
 
 //hooks
-import { useUserContext } from 'hooks/useUserContext';
+import { useLoggedUserContext } from 'hooks/useUserContext';
 
 //types
-import { ActionType, SelectedOptionType } from 'types';
+import { ActionType, SelectedType } from 'types';
 
 //constants
-import { CHANNEL } from 'Constants';
+import { CHANNEL, DIRECT_MESSAGE, SELECT } from 'Constants';
 
 //CSS
 import './Modal.css';
-import console from 'console';
 
 export const Modal = ({
   isOpen,
@@ -36,12 +36,13 @@ export const Modal = ({
   handleClose: () => void;
   users?: Array<{ id: string; displayName: string; included: boolean }>;
   selectedId?: string;
-  modalType: SelectedOptionType;
+  modalType: SelectedType;
   onAction: React.Dispatch<ActionType>;
 }): React.ReactElement => {
   const [inputValue, setInputValue] = useState('');
-  const [loggedUser] = useUserContext();
-  const { userId: loggedUserId = '' } = loggedUser ?? {};
+  const [loggedUser] = useLoggedUserContext();
+  const [error, setError] = useState<string | null>(null);
+  const { userId: loggedUserId } = loggedUser;
   const modalContainerRef = useRef(null);
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,22 +59,43 @@ export const Modal = ({
           .post(`/create/channel/${channelId}`, { userId: loggedUserId, channelName: inputValue })
           .then(res => {
             onAction({
-              type: 'select',
+              type: SELECT,
               payload: {
-                id: channelId,
-                selectedOptionType: CHANNEL,
+                selectedId: channelId,
+                selectedType: CHANNEL,
               },
             });
+            handleClose();
+            setInputValue('');
           })
           .catch(err => {
             throw new Error(err);
           });
       }
-      setInputValue('');
-      handleClose();
-      createChannel();
+      async function createDirectMessage() {
+        axios.post('/create/directMessage', { loggedUserId, directUsersId: [inputValue] }).then(res => {
+          const { status, data } = res.data;
+
+          if (status === 'success') {
+            onAction({
+              type: SELECT,
+              payload: {
+                selectedId: data.directMessageId,
+                selectedType: DIRECT_MESSAGE,
+              },
+            });
+            handleClose();
+            setInputValue('');
+          } else {
+            setError(`${inputValue} does not exists`);
+          }
+        });
+      }
+
+      if (modalType === CHANNEL) createChannel();
+      if (modalType === DIRECT_MESSAGE) createDirectMessage();
     },
-    [inputValue, loggedUserId, handleClose, onAction]
+    [inputValue, loggedUserId, handleClose, onAction, modalType]
   );
 
   const handleOutSideClick = useCallback(
@@ -90,15 +112,12 @@ export const Modal = ({
             <div className="modal-header">{headerTitle}</div>
             <span onClick={handleClose}>X</span>
             <form onSubmit={handleSubmit}>
-              {inputName ? (
-                <>
-                  <label htmlFor="modal-input" className="name-label">
-                    {inputName}
-                  </label>
-                  <input id="modal-input" className="name-input" onChange={handleChange} value={inputValue}></input>
-                </>
-              ) : null}
-              {footerTitle ? <button className="modal-footer">{footerTitle}</button> : null}
+              <BaseModal
+                inputName={inputName}
+                onChange={handleChange}
+                footerTitle={footerTitle}
+                inputValue={inputValue}
+              />
               <AddRemove
                 type={modalType}
                 users={users}
@@ -106,6 +125,7 @@ export const Modal = ({
                 onAction={onAction}
                 handleClose={handleClose}
               />
+              {error && <div className="error">{error}</div>}
             </form>
           </div>
         </div>

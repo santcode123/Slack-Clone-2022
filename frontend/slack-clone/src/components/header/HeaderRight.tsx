@@ -1,11 +1,11 @@
 import React from 'react';
 
 //hooks
-import { useUserContext } from 'hooks/useUserContext';
+import { useLoggedUserContext } from 'hooks/useUserContext';
 
 export const HeaderRight = () => {
-  const [loggedUser] = useUserContext();
-  const { displayName = '' } = loggedUser ?? {};
+  const [loggedUser] = useLoggedUserContext();
+  const { displayName } = loggedUser;
   return (
     <div className="header-right">
       <div className="user-name">{displayName}</div>

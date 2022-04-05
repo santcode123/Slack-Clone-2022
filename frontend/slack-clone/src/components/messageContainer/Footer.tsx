@@ -4,17 +4,17 @@ import axios from 'axios';
 import { BiSend } from 'react-icons/bi';
 
 //hooks
-import { useUserContext } from 'hooks/useUserContext';
-import { SelectedOptionType } from 'types';
+import { useLoggedUserContext } from 'hooks/useUserContext';
+import { SelectedType } from 'types';
 
 //Constants
-import { CHANNEL, USER } from 'Constants';
+import { CHANNEL, DIRECT_MESSAGE, USER } from 'Constants';
 
 export const Footer = React.forwardRef(
-  ({ id, type }: { id: string; type: SelectedOptionType }, ref: any): React.ReactElement => {
+  ({ id, type }: { id: string; type?: SelectedType }, ref: any): React.ReactElement => {
     const [inputValue, setInputValue] = useState('');
-    const [loggedUser] = useUserContext();
-    const { userId: loggedUserId = '' } = loggedUser ?? {};
+    const [loggedUser] = useLoggedUserContext();
+    const { userId: loggedUserId } = loggedUser;
 
     const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
       setInputValue(e.target.value);
@@ -25,15 +25,15 @@ export const Footer = React.forwardRef(
         e.preventDefault();
         if (type === CHANNEL) axios.post(`send/message/channel/${id}`, { message: inputValue, userId: loggedUserId });
 
-        if (type === USER) {
-          axios.post(`send/message/directUser/${loggedUserId}`, { message: inputValue, directUserId: id });
+        if (type === DIRECT_MESSAGE) {
+          axios.post(`send/directMessage/${loggedUserId}`, { message: inputValue, directMessageId: id });
         }
         setInputValue('');
         const timeoutId = setTimeout(() => {
           const scroll = ref.current?.scrollHeight - ref.current?.clientHeight;
           ref.current?.scrollTo(0, scroll);
           clearTimeout(timeoutId);
-        }, 1000);
+        }, 500);
         // scroll when data is available
       },
       [inputValue, id, loggedUserId, ref, type]

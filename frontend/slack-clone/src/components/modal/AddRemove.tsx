@@ -5,10 +5,10 @@ import axios from 'axios';
 import { User } from './User';
 
 //types
-import { ActionType, SelectedOptionType } from 'types';
+import { ActionType, SelectedType } from 'types';
 
 //hooks
-import { useUserContext } from 'hooks/useUserContext';
+import { useLoggedUserContext } from 'hooks/useUserContext';
 import { CHANNEL, REMOVE, USER } from 'Constants';
 
 export const AddRemove = ({
@@ -19,64 +19,29 @@ export const AddRemove = ({
   handleClose,
 }: {
   users?: Array<{ id: string; displayName: string; included: boolean }>;
-  type: SelectedOptionType;
+  type: SelectedType;
   selectedId?: string;
   onAction: React.Dispatch<ActionType>;
   handleClose: () => void;
 }): React.ReactElement => {
-  const [loggedUser] = useUserContext();
-  const { userId: loggedUserId } = loggedUser ?? {};
+  const [loggedUser] = useLoggedUserContext();
+  const { userId: loggedUserId } = loggedUser;
   const includedUsers = users?.filter(user => user.included);
   const excludedUsers = users?.filter(user => !user.included);
   const handleAction = useCallback(
     (e: React.MouseEvent<HTMLButtonElement, MouseEvent> & React.ChangeEvent<HTMLButtonElement>) => {
       e.preventDefault();
       e.stopPropagation();
-
       const clickedUserId = e.target.id;
       const clickedUser = users?.filter(ele => ele.id === clickedUserId)?.[0];
-
-      if (clickedUser?.included && type === CHANNEL) {
-        axios.post(`remove/user/fromChannel`, { channelId: selectedId, userId: clickedUserId }).then(res => {
-          if (clickedUserId === loggedUserId) {
-            onAction({
-              type: REMOVE,
-              payload: {
-                id: '',
-              },
-            });
-          }
-        });
-      } else if (type === CHANNEL) {
+      console.log(clickedUser, users);
+      if (clickedUser?.included && type === USER && clickedUserId !== loggedUserId) {
+        axios.post(`remove/user/fromChannel`, { channelId: selectedId, userId: clickedUserId });
+      } else if (type === USER) {
         axios.post(`add/user/toChannel`, { channelId: selectedId, userId: clickedUserId });
       }
-
-      if (type === USER) {
-        if (clickedUser?.included) {
-          axios.post(`remove/directUser/${loggedUserId}`, { directUserId: clickedUserId });
-
-          if (clickedUserId === selectedId) {
-            onAction({
-              type: REMOVE,
-              payload: {
-                id: '',
-              },
-            });
-          }
-        } else {
-          axios.post(`add/directUser/${loggedUserId}`, { directUserId: clickedUserId });
-          onAction({
-            type: 'select',
-            payload: {
-              id: clickedUserId,
-              selectedOptionType: USER,
-            },
-          });
-          handleClose();
-        }
-      }
     },
-    [users, selectedId, type, loggedUserId, onAction, handleClose]
+    [users, selectedId, type, loggedUserId]
   );
   return (
     <div>

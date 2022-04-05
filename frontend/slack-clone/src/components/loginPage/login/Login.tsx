@@ -7,36 +7,63 @@ import { UserInput } from '../UserInput';
 //hooks
 import { useUserContext } from 'hooks/useUserContext';
 
+//constants
+import { LOGIN } from 'Constants';
+
+//utils
+import { getErrorMessage } from 'utils';
+
 const DEFAULT_FORM_DATA = { userName: '', password: '' };
 
 export const Login = (): React.ReactElement => {
   const [formData, setFormData] = useState(DEFAULT_FORM_DATA);
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [, setLoggedUser] = useUserContext();
 
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputId = e.target.id;
-    setFormData(prevData => ({ ...prevData, [inputId]: e.target.value }));
-  }, []);
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const inputId = e.target.id;
+      const newFormData = { ...formData, [inputId]: e.target.value };
+      setFormData(newFormData);
+
+      // dynamic error handling
+      if (isSubmitted) {
+        const { userName, password } = newFormData;
+        const errorMessage = getErrorMessage({ userName, password }, LOGIN);
+        setError(errorMessage);
+      }
+    },
+    [formData, isSubmitted]
+  );
 
   const handleSubmit = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
+      setIsSubmitted(true);
       const { userName, password } = formData;
 
       if (userName && password) {
-        axios.post(`getUser/withLoginInfo`, { userName, password }).then(res => {
-          const resData = res.data;
-          if (resData.status === 'success') {
-            const { displayName, userId } = resData;
-            setLoggedUser({ userId, displayName });
-          }
-          if (resData.status === 'user does not exist') {
-            setError('user does not exist please try to SignUp');
-          }
-        });
+        axios
+          .post(`getUser/withLoginInfo`, formData)
+          .then(res => {
+            const { status, userId, displayName } = res.data;
+            if (status === 'success') {
+              setLoggedUser({ userId, displayName });
+            }
+            if (status === 'user does not exist') {
+              setError('user does not exist please try to SignUp');
+            }
+            if (status === 'incorrect password') {
+              setError('incorrect password');
+            }
+          })
+          .catch(err => {
+            setError(err);
+          });
       } else {
-        setError('userName and password are required');
+        const errorMessage = getErrorMessage({ userName, password }, LOGIN);
+        setError(errorMessage);
       }
     },
     [formData, setLoggedUser]

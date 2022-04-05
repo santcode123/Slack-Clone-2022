@@ -9,27 +9,23 @@ import { DirectMessage } from './directMessage/DirectMessage';
 import './SideBar.css';
 
 //types
-import { ActionType, AllDatabaseType } from 'types';
+import { ActionType, ChannelsInfoType, DirectMessageInfoType } from 'types';
 
 export const SideBar = ({
-  id,
   onAction,
-  data,
+  channelsInfo,
+  directMessagesInfo,
 }: {
-  id: string;
   onAction: React.Dispatch<ActionType>;
-  data: AllDatabaseType | null;
+  channelsInfo?: Array<ChannelsInfoType>;
+  directMessagesInfo?: Array<DirectMessageInfoType>;
 }): React.ReactElement => {
-  const { allChannels, allUsers, channelsId, directUsersId } = data ?? {};
-
-  const channels = channelsId?.map(id => ({ id, ...allChannels?.[id] }));
-
   return (
     <div className="sidebar-container">
       <SideBarHeader />
       <div>
-        <Channels onAction={onAction} channels={channels} />
-        <DirectMessage onAction={onAction} directUsersId={directUsersId ?? []} allUsers={allUsers ?? {}} id={id} />
+        <Channels onAction={onAction} channelsInfo={channelsInfo} />
+        <DirectMessage onAction={onAction} directMessagesInfo={directMessagesInfo} />
       </div>
     </div>
   );

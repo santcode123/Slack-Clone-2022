@@ -1,40 +1,47 @@
-import { Modal } from 'components/modal/Modal';
 import React, { useCallback, useState } from 'react';
-import { ActionType, SelectedOptionType, UserType } from 'types';
+import axios from 'axios';
 
 //constants
-import { USER } from '../../../Constants';
+import { Modal } from 'components/modal/Modal';
+import { DIRECT_MESSAGE, USER } from '../../../Constants';
+
+//types
+import { ActionType, SelectedType } from 'types';
 
 export const HeaderRight = ({
   type,
   members,
-  allUsers,
   selectedId,
   onAction,
 }: {
-  type: SelectedOptionType;
-  members?: Array<string>;
-  allUsers: Record<string, UserType>;
+  type?: SelectedType;
+  members: Array<string>;
   selectedId: string;
   onAction: React.Dispatch<ActionType>;
 }): React.ReactElement => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [allUsers, setAllUsers] = useState<Array<{ userId: string; displayName: string }>>([]);
 
-  const users = Object.keys(allUsers).map(id => ({
-    id,
-    displayName: allUsers[id].firstName + ' ' + allUsers[id].lastName,
-    included: members?.includes(id) ?? false,
+  const users = allUsers.map(user => ({
+    id: user.userId,
+    displayName: user.displayName,
+    included: members?.includes(user.userId),
   }));
 
   const handleClick = useCallback(() => {
+    if (!isModalOpen) {
+      axios.get('get/allUsers').then(res => {
+        setAllUsers(res.data.allUsers);
+      });
+    }
     setIsModalOpen(prev => !prev);
-  }, []);
+  }, [isModalOpen]);
   const handleClose = useCallback(() => {
     setIsModalOpen(false);
   }, []);
 
   let Comp;
-  if (type === USER) {
+  if (type === DIRECT_MESSAGE) {
     Comp = <div>Call</div>;
   } else {
     Comp = (
@@ -43,6 +50,7 @@ export const HeaderRight = ({
       </button>
     );
   }
+
   return (
     <div className="messageContainer-header-right">
       <Modal
@@ -51,7 +59,7 @@ export const HeaderRight = ({
         handleClose={handleClose}
         users={users}
         selectedId={selectedId}
-        modalType="channel"
+        modalType={USER}
         onAction={onAction}
       />
       {Comp}

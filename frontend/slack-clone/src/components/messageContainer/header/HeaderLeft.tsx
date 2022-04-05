@@ -1,16 +1,10 @@
 import React from 'react';
-import { SelectedOptionType } from 'types';
+import { SelectedType } from 'types';
 
 //constants
 import { CHANNEL } from '../../../Constants';
 
-export const HeaderLeft = ({
-  type,
-  displayName,
-}: {
-  type: SelectedOptionType;
-  displayName: string;
-}): React.ReactElement => {
+export const HeaderLeft = ({ type, displayName }: { type?: SelectedType; displayName: string }): React.ReactElement => {
   return (
     <div className="messageContainer-header-left">
       {type === CHANNEL ? (

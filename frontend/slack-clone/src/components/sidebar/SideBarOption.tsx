@@ -2,35 +2,34 @@ import React, { useCallback } from 'react';
 import axios from 'axios';
 
 //types
-import { ActionType, SelectedOptionType } from 'types';
+import { ActionType, SelectedType } from 'types';
 
 //hooks
-import { useUserContext } from 'hooks/useUserContext';
+import { useLoggedUserContext } from 'hooks/useUserContext';
 
 //constants
-import { DEFAULT_IMG_URL, CHANNEL, USER, REMOVE, SELECT } from 'Constants';
+import { DEFAULT_IMG_URL, CHANNEL, REMOVE, SELECT, DIRECT_MESSAGE } from 'Constants';
 
 export const SideBarOption = ({
   id,
   type,
   onAction,
   displayName,
-  members,
 }: {
   id: string;
-  type: SelectedOptionType;
+  type: SelectedType;
   onAction: React.Dispatch<ActionType>;
   displayName: string;
-  members?: Array<string>;
 }): React.ReactElement => {
-  const [loggedUser] = useUserContext();
-  const { userId: loggedUserId = '' } = loggedUser ?? {};
+  const [loggedUser] = useLoggedUserContext();
+  const { userId: loggedUserId } = loggedUser;
+
   const handleClick = useCallback(() => {
     onAction({
       type: SELECT,
       payload: {
-        id,
-        selectedOptionType: type,
+        selectedId: id,
+        selectedType: type,
       },
     });
   }, [id, type, onAction]);
@@ -41,13 +40,13 @@ export const SideBarOption = ({
       if (type === CHANNEL) {
         axios.post(`remove/channel/${loggedUserId}`, { channelId: id });
       }
-      if (type === USER) {
-        axios.post(`remove/directUser/${loggedUserId}`, { directUserId: id });
+      if (type === DIRECT_MESSAGE) {
+        axios.post(`remove/directMessage/${loggedUserId}`, { directMessageId: id });
       }
       onAction({
         type: REMOVE,
         payload: {
-          id: '',
+          selectedId: '',
         },
       });
     },
@@ -56,7 +55,7 @@ export const SideBarOption = ({
   return (
     <div className="side-option" onClick={handleClick}>
       <span>{type === CHANNEL ? '#' : <img src={DEFAULT_IMG_URL} width={20} height={20} alt="profile" />}</span>
-      <div className="side-option-displayName">{`${displayName} ${loggedUserId === id ? '(you)' : ''}`}</div>
+      <div className="side-option-displayName">{displayName}</div>
       <span className="close-side-option" onClick={handleRemove}>
         X
       </span>

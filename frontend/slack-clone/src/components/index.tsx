@@ -9,14 +9,13 @@ import { ErrorFallback } from './ErrorFallback';
 
 //utils
 import { reducer } from '../reducer';
-import { getLoggedUserInfo } from 'utils';
 
 //hooks
-import { useUserContext } from 'hooks/useUserContext';
-import { useFetchAllDatabase } from 'hooks/useFetchAllDatabase';
+import { useLoggedUserContext } from 'hooks/useUserContext';
+import { useFetchUserData } from 'hooks/useFetchUserData';
 
 //types
-import { SelectedOptionType } from 'types';
+import { SelectedType } from 'types';
 
 //constants
 import { LOADING, ERROR } from 'Constants';
@@ -24,23 +23,22 @@ import { LOADING, ERROR } from 'Constants';
 // CSS
 import './SlackApp.css';
 
-const INITIAL_STATE: { id: string; selectedOptionType: SelectedOptionType } = {
-  id: '',
-  selectedOptionType: 'channel',
+const INITIAL_STATE: { selectedId: string; selectedType?: SelectedType } = {
+  selectedId: '',
 };
 export const SlackApp = (): React.ReactElement => {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
-  const [loggedUser] = useUserContext();
-  const { userId: loggedUserId = '' } = loggedUser ?? {};
-  const { status, data } = useFetchAllDatabase(loggedUserId);
+  const [loggedUser] = useLoggedUserContext();
+  const { userId: loggedUserId } = loggedUser;
 
-  const { id, selectedOptionType } = state;
+  const { selectedId, selectedType } = state;
 
-  const { displayName, messageStream, members } = getLoggedUserInfo(loggedUserId, id, selectedOptionType, data);
+  const { status, data } = useFetchUserData(loggedUserId, selectedType, selectedId);
 
-  if (status === LOADING) {
-    return <LoadingFallback fallbackMessage="please wait..." />;
-  }
+  const chatInfo = data?.selectedInfo;
+
+  if (status === LOADING) return <LoadingFallback fallbackMessage="please wait..." />;
+
   if (status === ERROR) {
     return <ErrorFallback />;
   }
@@ -48,16 +46,8 @@ export const SlackApp = (): React.ReactElement => {
     <div className="slack">
       <Header />
       <div className="slack-body">
-        <SideBar onAction={dispatch} data={data} id={id} />
-        <MessageContainer
-          id={id}
-          displayName={displayName ?? ''}
-          messageStream={messageStream ?? []}
-          members={members}
-          type={selectedOptionType}
-          allUsers={data?.allUsers ?? {}}
-          onAction={dispatch}
-        />
+        <SideBar onAction={dispatch} channelsInfo={data?.channelsInfo} directMessagesInfo={data?.directMessagesInfo} />
+        {chatInfo && <MessageContainer {...chatInfo} type={selectedType} onAction={dispatch} />}
       </div>
     </div>
   );

@@ -10,35 +10,20 @@ import { Modal } from 'components/modal/Modal';
 import { useUserContext } from 'hooks/useUserContext';
 
 //types
-import { ActionType, UserType } from 'types';
+import { ActionType, DirectMessageInfoType } from 'types';
 
 //constants
-import { USER } from 'Constants';
+import { DIRECT_MESSAGE } from 'Constants';
 
 export const DirectMessage = ({
   onAction,
-  directUsersId,
-  allUsers,
-  id,
+  directMessagesInfo,
 }: {
   onAction: React.Dispatch<ActionType>;
-  directUsersId: Array<string>;
-  allUsers: Record<string, UserType>;
-  id: string;
+  directMessagesInfo?: Array<DirectMessageInfoType>;
 }): React.ReactElement => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
-
-  const users = Object.keys(allUsers).map(id => ({
-    id,
-    displayName: allUsers[id].firstName + ' ' + allUsers[id].lastName,
-    included: directUsersId?.includes(id) ?? false,
-  }));
-
-  const directUsers = directUsersId.map(id => ({
-    userId: id,
-    displayName: allUsers[id].firstName + ' ' + allUsers[id].lastName,
-  }));
 
   const handleCollapsed = useCallback(() => {
     setIsCollapsed(prev => !prev);
@@ -57,21 +42,21 @@ export const DirectMessage = ({
       <Modal
         isOpen={isModalOpen}
         headerTitle="start Direct conversation"
+        inputName="Enter UserName"
+        footerTitle="submit"
         handleClose={handleClose}
-        users={users}
-        selectedId={id}
-        modalType="user"
+        modalType={DIRECT_MESSAGE}
         onAction={onAction}
       />
       <div className="direct-messages">
         {!isCollapsed &&
-          directUsers?.map(user => (
+          directMessagesInfo?.map(dmInfo => (
             <SideBarOption
-              key={user.userId}
-              id={user.userId}
-              type={USER}
+              key={dmInfo.dmId}
+              id={dmInfo.dmId}
+              type={DIRECT_MESSAGE}
               onAction={onAction}
-              displayName={user.displayName}
+              displayName={dmInfo.displayName}
             />
           ))}
       </div>

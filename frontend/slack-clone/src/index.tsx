@@ -1,14 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import Slack from './Slack';
-import { ContextProvider } from './contextProvider';
+import { UserContextProvider } from './contextProviders/UserContextProvider';
+import './index.css';
 
 ReactDOM.render(
   <React.StrictMode>
-    <ContextProvider>
+    <UserContextProvider>
       <Slack />
-    </ContextProvider>
+    </UserContextProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

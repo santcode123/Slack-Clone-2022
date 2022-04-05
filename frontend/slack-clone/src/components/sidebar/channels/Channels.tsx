@@ -3,19 +3,21 @@ import React, { useCallback, useState } from 'react';
 //components
 import { SideOptionHeader } from '../SideOptionHeader';
 import { SideBarOption } from '../SideBarOption';
-import { ActionType, ChannelType } from 'types';
 import { Modal } from 'components/modal/Modal';
 import { SideOptionFooter } from '../SideOptionFooter';
 
 //constants
 import { CHANNEL } from 'Constants';
 
+//types
+import { ActionType, ChannelsInfoType } from 'types';
+
 export const Channels = ({
   onAction,
-  channels,
+  channelsInfo,
 }: {
   onAction: React.Dispatch<ActionType>;
-  channels?: Array<Partial<ChannelType> & { id: string }>;
+  channelsInfo?: Array<ChannelsInfoType>;
 }): React.ReactElement => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -37,7 +39,7 @@ export const Channels = ({
       <Modal
         headerTitle="Create a channel"
         isOpen={isModalOpen}
-        inputName="Channel"
+        inputName="Channel name"
         footerTitle="Create a channel"
         handleClose={handleClose}
         modalType={CHANNEL}
@@ -46,14 +48,13 @@ export const Channels = ({
       <SideOptionHeader isCollapsed={isCollapsed} onClick={handleCollapsed} label="Channels" />
       <div className="channels">
         {!isCollapsed &&
-          channels?.map(channel => (
+          channelsInfo?.map(channel => (
             <SideBarOption
-              key={channel.id}
-              id={channel.id}
-              type="channel"
+              key={channel.channelId}
+              id={channel.channelId}
+              type={CHANNEL}
               onAction={onAction}
-              displayName={channel.channelName ?? ''}
-              members={channel.members}
+              displayName={channel.channelName}
             />
           ))}
       </div>
